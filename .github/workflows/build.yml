@@ -1,0 +1,44 @@
+name: Build APK
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Set up JDK
+        uses: actions/setup-java@v5
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true
+      
+      - name: echo Flutter version
+        run: flutter --version
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Build APK for ARMv8
+        run: |
+          flutter build apk --release --target-platform android-arm64
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: ARMv8 APK Release
+          tag_name: apk
+          files: "**/*.apk"
+          make_latest: true
