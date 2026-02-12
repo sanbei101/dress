@@ -1,12 +1,24 @@
 import 'package:dress/index.dart';
+import 'package:dress/outfit_agent.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+enum AppRoute { preference, outfitAgent }
+
 final GoRouter _router = GoRouter(
   initialLocation: '/',
   routes: [
-    GoRoute(path: '/', builder: (context, state) => const PreferenceScreen()),
+    GoRoute(
+      path: '/',
+      name: AppRoute.preference.name,
+      builder: (context, state) => const PreferenceScreen(),
+    ),
+    GoRoute(
+      path: '/outfit-agent',
+      name: AppRoute.outfitAgent.name,
+      builder: (context, state) => const OutfitAgentScreen(),
+    ),
   ],
 );
 

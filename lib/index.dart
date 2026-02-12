@@ -1,6 +1,8 @@
+import 'package:dress/main.dart';
 import 'package:dress/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 @immutable
 class UserPrefs {
@@ -109,6 +111,7 @@ class PreferenceScreen extends ConsumerWidget {
           const SizedBox(height: 8),
           Wrap(
             spacing: 8.0,
+            runSpacing: 8.0,
             children: colors.map((color) {
               return ChoiceChip(
                 label: Text(color),
@@ -117,6 +120,15 @@ class PreferenceScreen extends ConsumerWidget {
                     ref.read(userPrefsProvider.notifier).toggleColor(color),
               );
             }).toList(),
+          ),
+          const SizedBox(height: 24),
+
+          // 穿搭 Agent 按钮
+          FilledButton(
+            onPressed: () {
+              context.pushNamed(AppRoute.outfitAgent.name);
+            },
+            child: const Text("进入穿搭 Agent"),
           ),
         ],
       ),
