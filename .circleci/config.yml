@@ -1,0 +1,46 @@
+version: 2.1
+
+orbs:
+  flutter: circleci/flutter@3
+  github-cli: circleci/github-cli@2
+
+jobs:
+  build-and-release:
+    resource_class: large
+    docker:
+      - image: cimg/android:2026.02
+
+    steps:
+      - checkout
+
+      - flutter/install_sdk_and_pub:
+          channel: stable
+          version: 3.41.0
+      
+      - run:
+          name: Echo Flutter Version
+          command: flutter --version
+
+      - run:
+          name: Build APK
+          command: |
+            flutter build apk --release --split-per-abi --target-platform android-arm64
+
+      - github-cli/setup:
+          token: GITHUB_TOKEN
+
+      - run:
+          name: Publish Overwrite
+          command: |
+            gh release delete apk --yes || true
+            gh release create apk build/app/outputs/flutter-apk/app-arm64-v8a-release.apk \
+               --title "ARMv8 APK" \
+               --notes "Built on $(date)"
+
+workflows:
+  build:
+    jobs:
+      - build-and-release:
+          filters:
+            branches:
+              only: main
