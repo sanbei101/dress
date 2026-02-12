@@ -36,7 +36,7 @@ jobs:
 
       - name: Build APK for ARMv8
         run: |
-          flutter build apk --release --split-per-abi --target-platform android-arm64
+          flutter build apk --release --verbose --split-per-abi --target-platform android-arm64
 
       - name: Create Release
         uses: softprops/action-gh-release@v2
