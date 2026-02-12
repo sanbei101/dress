@@ -43,5 +43,6 @@ jobs:
         with:
           name: ARMv8 APK Release
           tag_name: apk
-          files: "**/*.apk"
+          files: "build/app/outputs/flutter-apk/*.apk"
+          overwrite: true
           make_latest: true
