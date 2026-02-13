@@ -36,6 +36,9 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
+      - name: Generate Freezed code
+        run: dart run build_runner build --delete-conflicting-outputs
+        
       - name: Build APK for ARMv8
         run: |
           flutter build apk --release --split-per-abi --target-platform android-arm64

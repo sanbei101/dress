@@ -11,7 +11,11 @@
 .svn/
 .swiftpm/
 migrate_working_dir/
+# 忽略 Freezed 生成的文件
+*.freezed.dart
 
+# 忽略 json_serializable 生成的文件
+*.g.dart
 # IntelliJ related
 *.iml
 *.ipr

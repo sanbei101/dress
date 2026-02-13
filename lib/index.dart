@@ -2,31 +2,18 @@ import 'package:dress/main.dart';
 import 'package:dress/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:go_router/go_router.dart';
 
-@immutable
-class UserPrefs {
-  final String gender;
-  final List<String> selectedStyles;
-  final List<String> colors;
+part 'index.freezed.dart';
 
-  const UserPrefs({
-    this.gender = '女',
-    this.selectedStyles = const [],
-    this.colors = const [],
-  });
-
-  UserPrefs copyWith({
-    String? gender,
-    List<String>? selectedStyles,
-    List<String>? colors,
-  }) {
-    return UserPrefs(
-      gender: gender ?? this.gender,
-      selectedStyles: selectedStyles ?? this.selectedStyles,
-      colors: colors ?? this.colors,
-    );
-  }
+@freezed
+abstract class UserPrefs with _$UserPrefs {
+  const factory UserPrefs({
+    @Default('女') String gender,
+    @Default([]) List<String> selectedStyles,
+    @Default([]) List<String> colors,
+  }) = _UserPrefs;
 }
 
 class UserPrefsNotifier extends Notifier<UserPrefs> {

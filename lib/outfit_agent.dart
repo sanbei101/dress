@@ -2,6 +2,8 @@ import 'package:dress/index.dart';
 import 'package:dress/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
+part 'outfit_agent.freezed.dart';
 
 final clothingTypes = ["上衣", "裤子", "裙子", "外套", "鞋子", "配饰"];
 
@@ -12,36 +14,15 @@ final outerStyles = ["大衣", "羽绒服", "风衣", "西装", "皮夹克"];
 final shoeStyles = ["运动鞋", "皮鞋", "靴子", "凉鞋", "拖鞋"];
 final accessoryStyles = ["帽子", "围巾", "腰带", "包", "首饰"];
 
-class OutfitAgentState {
-  final String? selectedType;
-  final List<String> selectedStyles;
-  final bool isLoading;
-  final bool isFavorite;
-  final String? generatedImageUrl;
-
-  OutfitAgentState({
-    this.selectedType,
-    this.selectedStyles = const [],
-    this.isLoading = false,
-    this.isFavorite = false,
-    this.generatedImageUrl,
-  });
-
-  OutfitAgentState copyWith({
+@freezed
+abstract class OutfitAgentState with _$OutfitAgentState {
+  const factory OutfitAgentState({
     String? selectedType,
-    List<String>? selectedStyles,
-    bool? isLoading,
-    bool? isFavorite,
+    @Default([]) List<String> selectedStyles,
+    @Default(false) bool isLoading,
+    @Default(false) bool isFavorite,
     String? generatedImageUrl,
-  }) {
-    return OutfitAgentState(
-      selectedType: selectedType ?? this.selectedType,
-      selectedStyles: selectedStyles ?? this.selectedStyles,
-      isLoading: isLoading ?? this.isLoading,
-      isFavorite: isFavorite ?? this.isFavorite,
-      generatedImageUrl: generatedImageUrl ?? this.generatedImageUrl,
-    );
-  }
+  }) = _OutfitAgentState;
 }
 
 class OutfitAgentNotifier extends Notifier<OutfitAgentState> {
