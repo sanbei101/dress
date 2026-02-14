@@ -1,3 +1,4 @@
+import 'package:dress/ai.dart';
 import 'package:dress/index.dart';
 import 'package:dress/theme.dart';
 import 'package:flutter/material.dart';
@@ -22,6 +23,7 @@ abstract class OutfitAgentState with _$OutfitAgentState {
     @Default(false) bool isLoading,
     @Default(false) bool isFavorite,
     String? generatedImageUrl,
+    String? errorMessage,
   }) = _OutfitAgentState;
 }
 
@@ -44,12 +46,22 @@ class OutfitAgentNotifier extends Notifier<OutfitAgentState> {
   }
 
   Future<void> generateOutfit() async {
-    state = state.copyWith(isLoading: true);
-    await Future.delayed(const Duration(seconds: 2));
-    state = state.copyWith(
-      isLoading: false,
-      generatedImageUrl: 'https://via.placeholder.com/300x400?text=AI+生成的穿搭',
-    );
+    if (state.selectedType == null || state.selectedStyles.isEmpty) {
+      state = state.copyWith(errorMessage: "请选择服装类型和款式");
+      return;
+    }
+
+    state = state.copyWith(isLoading: true, errorMessage: null);
+
+    try {
+      final aiClient = ref.read(aiClientProvider);
+      final prefs = ref.read(userPrefsProvider);
+
+      await aiClient.generateOutfit(state, prefs);
+    } catch (e) {
+      debugPrint("generateOutfit error: $e");
+      state = state.copyWith(isLoading: false, errorMessage: "生成失败: $e");
+    }
   }
 
   void reset() {

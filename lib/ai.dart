@@ -1,5 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:dress/index.dart';
+import 'package:dress/outfit_agent.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -113,4 +116,55 @@ class VolcengineHttpClient {
       );
     }
   }
+
+  String _buildPrompt(OutfitAgentState state, UserPrefs prefs) {
+    final gender = prefs.gender;
+    final baseStyles = prefs.selectedStyles.join("、");
+    final preferredColors = prefs.colors.join("、");
+    final currentItem =
+        "${state.selectedType}: ${state.selectedStyles.join(' ')}";
+
+    return """
+    极高画质, 真实摄影风格, 8k分辨率.
+    一个穿着时尚的$gender, 整体风格为($baseStyles).
+    主打单品是: $currentItem.
+    配色方案参考: $preferredColors.
+    背景为简约的都市街头或高级工作室, 自然光影, 构图精美, 展现服装的材质细节和剪裁感.
+    不要出现文字, 比例协调, 电影级调色.
+    """;
+  }
+
+  Future<void> generateOutfit(OutfitAgentState state, UserPrefs prefs) async {
+    try {
+      final dynamicPrompt = _buildPrompt(state, prefs);
+
+      final response = await generateImage(
+        model: "doubao-seedream-4-5-251128",
+        prompt: dynamicPrompt,
+        size: "2K",
+        responseFormat: "url",
+        watermark: false,
+      );
+      response.when(
+        success: (model, created, data, usage) {
+          state = state.copyWith(
+            isLoading: false,
+            generatedImageUrl: data.first.url,
+          );
+        },
+        error: (error) {
+          state = state.copyWith(
+            isLoading: false,
+            errorMessage: "生成失败: ${error.message}",
+          );
+        },
+      );
+    } catch (error) {
+      state = state.copyWith(isLoading: false, errorMessage: "生成失败: $error");
+    }
+  }
 }
+
+final aiClientProvider = Provider<VolcengineHttpClient>((ref) {
+  return VolcengineHttpClient(apiKey: "f9449c2f-6174-4ce3-a5c7-9dcfddb3beb1");
+});
