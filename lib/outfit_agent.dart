@@ -57,7 +57,11 @@ class OutfitAgentNotifier extends Notifier<OutfitAgentState> {
       final aiClient = ref.read(aiClientProvider);
       final prefs = ref.read(userPrefsProvider);
 
-      await aiClient.generateOutfit(state, prefs);
+      final imageUrl = await aiClient.generateOutfit(state, prefs);
+      state = state.copyWith(
+        isLoading: false,
+        generatedImageUrl: imageUrl,
+      );
     } catch (e) {
       debugPrint("generateOutfit error: $e");
       state = state.copyWith(isLoading: false, errorMessage: "生成失败: $e");

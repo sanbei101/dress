@@ -134,34 +134,25 @@ class VolcengineHttpClient {
     """;
   }
 
-  Future<void> generateOutfit(OutfitAgentState state, UserPrefs prefs) async {
-    try {
-      final dynamicPrompt = _buildPrompt(state, prefs);
+  Future<String> generateOutfit(OutfitAgentState state, UserPrefs prefs) async {
+    final dynamicPrompt = _buildPrompt(state, prefs);
 
-      final response = await generateImage(
-        model: "doubao-seedream-4-5-251128",
-        prompt: dynamicPrompt,
-        size: "2K",
-        responseFormat: "url",
-        watermark: false,
-      );
-      response.when(
-        success: (model, created, data, usage) {
-          state = state.copyWith(
-            isLoading: false,
-            generatedImageUrl: data.first.url,
-          );
-        },
-        error: (error) {
-          state = state.copyWith(
-            isLoading: false,
-            errorMessage: "生成失败: ${error.message}",
-          );
-        },
-      );
-    } catch (error) {
-      state = state.copyWith(isLoading: false, errorMessage: "生成失败: $error");
-    }
+    final response = await generateImage(
+      model: "doubao-seedream-4-5-251128",
+      prompt: dynamicPrompt,
+      size: "2K",
+      responseFormat: "url",
+      watermark: false,
+    );
+
+    return response.when(
+      success: (model, created, data, usage) {
+        return data.first.url;
+      },
+      error: (error) {
+        throw Exception("生成失败: ${error.message}");
+      },
+    );
   }
 }
 
